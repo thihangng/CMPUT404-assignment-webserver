@@ -39,25 +39,29 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
         # Split request data and put the data args into a list: headers
         headers = self.data.decode("utf-8").split(' ')
-        method = headers[0]
-        path = headers[1]
-        if method == 'GET':
-            fullpath = os.path.abspath(os.getcwd())+'/www'+os.path.normpath(path)
-            try:
-                if os.path.isdir(fullpath): #path exists
-                    if path[-1] == '/':
+
+        try:
+            method = headers[0]
+            path = headers[1]
+            if method == 'GET':
+                fullpath = os.path.abspath(os.getcwd())+'/www'+os.path.normpath(path)
+                try:
+                    if os.path.isdir(fullpath): #path exists
+                        if path[-1] == '/':
+                            self.respond(200, fullpath)
+                        else:
+                            self.respond(301, path)
+                    elif os.path.isfile(fullpath): #path is html or css files
                         self.respond(200, fullpath)
-                    else:
-                        self.respond(301, path)
-                elif os.path.isfile(fullpath): #path is html or css files
-                    self.respond(200, fullpath)
-                else:  # path is invalid
-                    self.respond(404, fullpath)
-            except IOError:
-                pass
-        else:  # NOT A GET REQUEST
-            self.respond(405, None)
-               
+                    else:  # path is invalid
+                        self.respond(404, fullpath)
+                except IOError:
+                    pass
+            else:  # NOT A GET REQUEST
+                self.respond(405, None)
+        except IndexError:
+            pass
+
     def respond(self, code, path):
         
         if code == 404:
