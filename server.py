@@ -90,6 +90,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 fileRead= file.read()
                 fileLen = len(fileRead)
                 res = f'HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {fileLen}\r\n\r\n{fileRead}'
+		file.close()
 
         elif code == 405:
             message = """
